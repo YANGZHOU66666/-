@@ -430,3 +430,9 @@ body {background-image:url("images/back40.gif");}
 
 ## 4.CSS背景
 
+# Javascript
+
++ 必须放在<script></script>标签之中
+
+可以放在<head></head>之间或者<body></body>之间
+
