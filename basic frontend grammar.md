@@ -430,9 +430,290 @@ body {background-image:url("images/back40.gif");}
 
 ## 4.CSS背景
 
-# Javascript
+## 6. Flex Box模型
+
+### 6.1 对父元素设置的：（已经设置好为display:flex）
+
++ 设定主轴（沿着这条轴正方向排列）：flex-direction属性(column——竖直方向向下为主轴；row-reverse——水平方向向左为主轴)
++ 设定沿主轴对齐方式：justify-content属性(flex-end——主轴正方向末尾；flex-start主轴正方向开头；center——居中；space-between——两端对齐且两边无间隙；space-around——两端对齐且两端有间隙)
++ 设置主轴在父元素中的位置：align-items属性（center——主轴位于父元素中间）
+
+### 6.2 对子元素设置的：
+
++ flex属性：设定该子元素占比，不设置即为该元素正常值
+
+## 7. Position（定位）详解
+
+### 7.1 static（默认）
+
+
+
++ absolute
++ fixed
++ relative
++ sticky
+
+# JavaScript
 
 + 必须放在<script></script>标签之中
 
 可以放在<head></head>之间或者<body></body>之间
+
+## 1. 注释
+
+```javascript
+// 注释
+/* 注释 */
+```
+
+## 2. JavaScript输出
+
+### 2.1 弹出警告框
+
+```javascript
+window.alert() //弹出警告框
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>我的第一个页面</h1>
+<p>我的第一个段落。</p>
+
+<script>
+window.alert(5 + 6);//弹出警告框显示11
+</script>
+
+</body>
+</html
+```
+
+### 2.2 将内容写到HTML文档中
+
+```javascript
+document.write() //将内容写到HTML文档中
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>我的第一个 Web 页面</h1>
+
+<p>我的第一个段落。</p>
+
+<script>
+document.write(Date());
+</script>
+
+</body>
+</html>
+```
+
+> 注：
+>
+> 1.如上图所示加载时会在“我的第一个段落。”后形成一行日期
+>
+> 2.若在页面加载完成后再调用document.write()，会清空页面重新写
+
+### 2.3 写入到HTML元素
+
+```javascript
+innerHTML //用于操作HTML元素
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>我的第一个 Web 页面</h1>
+
+<p id="demo">我的第一个段落</p>
+
+<script>
+document.getElementById("demo").innerHTML = "段落已修改。";
+</script>
+
+</body>
+</html>
+```
+
+> 注意，这样打印出来的静态页面没有“我的第一个段落”这一行，因为加载时已经被修改
+
+### 2.4 写到控制台
+
+```javascript
+console.log()
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>我的第一个 Web 页面</h1>
+
+<script>
+a = 5;
+b = 6;
+c = a + b;
+console.log(c);
+</script>
+
+</body>
+</html>
+```
+
+>  会打印在console里
+
+## 3. JavaScript基本类型
+
+### Number字面量：
+
+```
+3.14
+1001
+123e5
+```
+
+### String字面量：
+
+```
+"John Doe"
+'John Doe'
+```
+
+### Array字面量：
+
+```
+[40, 100, 1, 5, 25, 10]
+```
+
+**初始化数组：**
+
+```javascript
+var cars = new Array();
+cars[0] = "Saab";
+cars[1] = "Volvo";
+cars[2] = "BMW";
+```
+
+### Object字面量：
+
+```
+{firstName:"John", lastName:"Doe", age:50, eyeColor:"blue"}
+```
+
+**初始化对象：**
+
+```javascript
+var person={firstname:"John", lastname:"Doe", id:5566};
+```
+
+或：
+
+```javascript
+var person = {
+    firstName:"John",
+    lastName:"Doe",
+    age:50,
+    eyeColor:"blue"
+};
+```
+
+**访问对象属性：**
+
+```javascript
+person.firstName;
+//或者
+person["lastName"];
+```
+
+**调用对象方法：**
+
+```javascript
+name = person.fullName();
+```
+
+**创建对象方法：**
+
+```javascript
+methodName : function() {
+    // 代码 
+}
+```
+
+**综合实例：**
+
+```javascript
+var person = {
+    firstName: "John",
+    lastName : "Doe",
+    id : 5566,
+    fullName : function() 
+	{
+       return this.firstName + " " + this.lastName;
+    }
+};
+document.getElementById("demo").innerHTML = person.fullName();
+```
+
+### Function字面量：
+
+```
+function myFunction(a, b) {
+	return a * b;
+}
+```
+
+**声明一个函数：**
+
+```javascript
+function functionname()
+{
+    // 执行代码
+}
+```
+
+**含参函数实例：**
+
+```javascript
+function myFunction(name,job){
+	alert("Welcome " + name + ", the " + job);
+}
+```
+
+**变量生存期：**
+
++ JavaScript 变量的生命期从它们被声明的时间开始。
+
++ 局部变量会在函数运行以后被删除。
+
++ 全局变量会在页面关闭后被删除。
+
+### 初始化实例：
+
+```javascript
+var length = 16;                                  // Number 通过数字字面量赋值
+var points = x * 10;                              // Number 通过表达式字面量赋值
+var lastName = "Johnson";                         // String 通过字符串字面量赋值
+var cars = ["Saab", "Volvo", "BMW"];              // Array  通过数组字面量赋值
+var person = {firstName:"John", lastName:"Doe"};  // Object 通过对象字面量赋值
+```
+
++ JavaScript拥有动态类型：
+
+```javascript
+var x;               // x 为 undefined
+var x = 5;           // 现在 x 为数字
+var x = "John";      // 现在 x 为字符串
+```
+
+## 4. JavaScript作用域
+
+# Vue
 
