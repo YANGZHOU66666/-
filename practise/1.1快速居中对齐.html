@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速居中对齐</title>
+</head>
+
+<body>
+    <div class="container"> 盒子 </div>
+</body>
+<style>
+    html,
+    body {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        /*复习一下：align-items在交叉轴上的位置对齐，justify-content在主轴上的位置对齐（可以有space-around）*/
+    }
+
+    .container {
+        width: 300px;
+        height: 300px;
+        background-color: orange;
+        margin: auto;
+    }
+
+    /*核心代码：display:flex;margin:auto;*/
+</style>
+
+</html>

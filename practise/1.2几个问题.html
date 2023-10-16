@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Some Questions</title>
+</head>
+
+<body>
+    <h1>1.padding和margin有什么不同</h1>
+    <div class="margin">margin</div>
+    <div class="padding">padding</div>
+    <p>padding作用于本身,margin作用于行</p>
+
+    <h1>2.vw和百分比有什么区别?</h1>
+    <div class="parent">
+        <div class="p1">百分比</div>
+        <div class="p2">vw</div>
+    </div>
+    <p>百分比有继承关系,vw取决于屏幕大小,无继承关系</p>
+    <h1>3.行内元素和块级元素</h1>
+    <p>1.行内元素的宽高由它的内容决定，块级元素独立占一行且宽度有继承关系（继承父级）</p>
+    <div class="parent2">
+        <div class="inline">行内元素</div>
+        <div class="block">块级元素</div>
+    </div>
+    <h1>4.如何让谷歌浏览器支持小字体</h1>
+    <p>谷歌浏览器最小支持12px</p>
+    <div class="font">这是一段文字</div>
+    <p>使用scale()函数</p>
+</body>
+<style>
+    .margin {
+        background-color: greenyellow;
+        margin: 20px;
+        width: 400px;
+        height: 100px;
+    }
+
+    .padding {
+        background-color: goldenrod;
+        padding: 20px;
+        width: 400px;
+        height: 100px;
+    }
+
+    .parent {
+        width: 50%;
+    }
+
+    .p1 {
+        width: 50%;
+        background-color: aqua;
+    }
+
+    .p2 {
+        background-color: blue;
+        width: 50vw;
+    }
+
+    .parent2 {
+        width: 300px;
+        height: 100px;
+        background-color: antiquewhite;
+    }
+
+    .inline {
+        display: inline;
+        background-color: brown;
+    }
+
+    .block {
+        display: block;
+        background-color: gold;
+    }
+
+    .font {
+        font-size: 12px;
+        transform: scale(0.8);
+    }
+</style>
+
+</html>
