@@ -1,7 +1,19 @@
-<script setup>
-</script>
 
 <template>
-  <div>测试</div>
+  <div v-bind:class="test">测试</div>
 </template>
 
+<script>
+export default{
+  data(){
+    return{
+      test:"testClass"
+    }
+  }
+}
+</script>
+<style scoped>
+.testClass{
+  color:red;
+}
+</style>
