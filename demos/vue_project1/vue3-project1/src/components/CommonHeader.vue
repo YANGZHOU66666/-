@@ -1,7 +1,7 @@
 <template>
   <el-header>
     <div class="l-content">
-      <el-icon><Menu /></el-icon>
+      <el-icon><Menu/></el-icon>
     </div>
     <div class="r-content">
       <el-dropdown>

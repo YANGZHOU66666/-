@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.pageContainer {
+    width: 100%;
+}
+
+.navContainer {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    width: 100%;
+}
+
+.nav {
+    height: 50px;
+    display: flex;
+    background-color: white;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.leftSpace {
+    flex-basis: 5%;
+    flex-grow: 5;
+}
+
+.titleContent {
+    flex-basis: 8rem;
+    flex-grow: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.midSpace {
+    flex-basis: 10%;
+    flex-grow: 4;
+}
+
+.navItem {
+    flex-basis: 3rem;
+    flex-grow: 0.3;
+}
+.navIcon {
+    flex-basis:1rem;
+    flex-grow: 0.3;
+}
+
+.rightSpace {
+    flex-basis: 5%;
+    flex-grow: 3;
+}
+
+.mainImgContainer {
+    width: 100%;
+}
+
+.mainImg {
+    width: 100%;
+}
+
+
+footer {
+    background-color: darkgray;
+    height: 15rem;
+    display: flex;
+}
+
+.footerHalfContent {
+    margin: 2rem;
+    line-height: 2.5rem;
+    flex: 1;
+}
