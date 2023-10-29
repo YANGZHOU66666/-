@@ -1054,3 +1054,876 @@ export default {
 
 上例中，点击按钮可获取input框中的内容（即用户输入的）
 
+## 组件组成
+
+在\<script>中引入和注册，在\<template>中引用
+
++ **App.vue**
+
+```vue
+<template>
+  <MyComponent/>
+  <my-component/><!--两种取名方式都可行-->
+</template>
+<script>
+import MyComponent from './components/MyComponent.vue';//引入
+export default{
+  components:{
+    MyComponent,//注册
+  }
+}
+</script>
+<style scoped>
+
+</style>
+```
+
++ **MyComponent.vue**
+
+```vue
+<template>
+    <p>我是component</p>
+</template>
+<script>
+export default{
+    
+}
+</script>
+
+```
+
+## 组件嵌套关系
+
+\<Root>--\<Header>
+
+​     |-------\<Main>--\<Article>*2
+
+​     |-------\<Aside>--\<Item>*3
+
+ 组件之间可以互相嵌套，代码略
+
+## 组件注册方式
+
+### 全局注册
+
+在main.js中注册：
+
+```
+app=createApp(App)
+```
+
+和
+
+```
+app.mount('#app')
+```
+
+之间注册
+
+```vue
+import { createApp } from 'vue'
+import App from './App.vue'
+import MyComponent from './components/MyComponent.vue';
+
+const app = createApp(App)
+
+app.component("MyComponent", MyComponent)
+
+app.mount('#app')
+
+```
+
+其他地方直接引用即可
+
++ **缺点：**
+
+1. 没有被使用的组件无法在生产打包时自动移除
+2. 大型项目中项目的依赖关系变得没那么明确。在父组件中使用子组件时，不太容易定位子组件的实现。类似使用过多全局变量，影响应用长期的可维护性
+
+## 组件传递数据 Props
+
+子组件接受父组件传来的数据用props
+
+父组件在子组件处加()=""的形式传递数据
+
++ Parent.vue:
+
+```vue
+<template>
+    <h3>Parent</h3>
+    <Child title="Parent数据" demo="数据2"/><!--向子组件传递数据-->
+</template>
+<script>
+import Child from './Child.vue'
+export default {
+    data(){
+        return{
+
+        }
+    },
+    components:{
+        Child,
+    }
+}
+</script>
+```
+
++ Child.vue:
+
+```vue
+<template>
+    <h3>Child</h3>
+    <p>{{ title }}</p>
+    <p>{{ demo }}</p>
+</template>
+<script>
+export default{
+    data(){
+        return{
+
+        }
+    },
+    props:["title","demo"]//从父组件接收数据
+}
+</script>
+```
+
+### 结合v-bind使用
+
+可以传递data()中的数据，动态传递数据
+
++ Parent.vue:
+
+```vue
+<template>
+    <h3>Parent</h3>
+    <Child title="Parent数据" :demo="msg"/>
+</template>
+<script>
+import Child from './Child.vue'
+export default {
+    data(){
+        return{
+            msg:true,
+        }
+    },
+    components:{
+        Child,
+    }
+}
+</script>
+```
+
+### 注意事项
+
+props传递数据，只能从父级传递到子级，不能反其道而行
+
+### props校验
+
+#### 设置接受类型
+
+在子组件的接受端的props处增加数据类型，如：
+
+```vue
+props:{
+    "title":String,
+}
+```
+
+这样，当父组件传过来的title不为String类型时，控制台会报错
+
+也可以接受多种数据类型：
+
+```vue
+props:{
+    "title":{
+        type:[Number,String,Object],
+    }
+}
+```
+
+#### 设置不传时的默认值
+
+```vue
+props:{
+    title:{
+        type:String,
+    },
+    age:{
+        type:Number,
+        default:0,
+    }
+}
+```
+
+当负组件不传值时，age默认为0
+
+数字和字符串可以直接default，但是**数组和对象必须通过工厂函数获得默认值**
+
+```vue
+props:{
+    title:{
+        type:String,
+    },
+    age:{
+        type:Number,
+        default:0,
+    },
+    names:{
+        type:Array,
+        default(){
+            return ["空"];
+        }
+    }
+}
+```
+
+### 设置必须传
+
+添加required:true，不传的话控制台报警
+
+```vue
+props:{
+    title:{
+        type:String,
+    },
+    age:{
+        type:Number,
+        required:true,
+    },
+    names:{
+        type:Array,
+        default(){
+            return ["空"];
+        }
+    }
+}
+```
+
++ **注意事项：props是只读的**，不允许修改父元素传递的数据
++ 但可以作为参数在函数里面调用：调用方法和本地变量一样
+
+```vue
+methods:{
+	handle(){
+		console.log(this.names);
+	}
+}
+```
+
+### props通过特殊设计也可以实现子传父
+
++ 核心思想：父元素将某个需要参数的函数用props传给子元素（似乎是浅拷贝），然后子元素调用该函数，此时父元素处也正在调用该函数，在函数内将其赋值给父元素的某变量
+
++ ComponentA.vue(父组件)：
+
+```vue
+<template>
+    <h3>componentA</h3>
+    <ComponentB title="标题" :onEvent="datafn"/>
+    <div>{{ message }}</div>
+</template>
+<script>
+import ComponentB from './componentB.vue';
+export default {
+    data(){
+        return{
+            message:"",
+        }
+    },
+    methods:{
+        datafn(data){
+            console.log(data);
+            this.message=data;
+        }
+    },
+    components:{
+        ComponentB,
+    }
+}
+</script>
+```
+
++ ComponentB.vue(子组件)
+
+```vue
+<template>
+    <h3>componentB</h3>
+    <p>{{ title }}</p>
+    <div>{{onEvent('传递数据')}}</div>
+</template>
+<script>
+export default {
+    data(){
+        return{
+
+        }
+    },
+    props:{
+        title:String,
+        onEvent:Function,
+    }
+}
+</script>
+```
+
+父组件将datafn()函数传给子组件，子组件处该函数名为onEvent(但调用的其实是一个函数)，子组件调用该函数时父组件的message被赋值
+
+## 组件事件（$emit子传父）
+
+在子组件的某方法中设置this.$emit("")，括号内为事件名。在父组件中用@...=""来接受，...为刚刚定义的事件名，""内为触发方法（定义在methods中），当接收到信息后该方法被调用。
+
++ ComponentEvent.vue(父组件)：
+
+```vue
+<template>
+    <h3>组件事件</h3>
+    <Child @someEvent="getHandle"/>
+</template>
+<script>
+import Child from './Child.vue';
+export default {
+    components:{
+        Child,
+    },
+    methods:{
+        getHandle(){
+            console.log("receieved");
+        }
+    }
+}
+</script>
+```
+
+事件名称为someEvent，收到数据后触发getHandle方法
+
++ Child.vue(子组件)
+
+```vue
+<template>
+    <h3>Child</h3>
+    <button @click="clickEventHandle">传递数据</button>
+</template>
+<script>
+export default {
+    methods:{
+        clickEventHandle(){
+            //自定义事件
+            this.$emit("someEvent");
+        }
+    }
+}
+</script>
+```
+
+点击按钮后调用clickEventHandle方法，该方法触发someEvent事件
+
+### 在组件事件中增加参数
+
+在emit后的括号中，第一个参数为事件名，第二个参数即为传递的内容
+
+在接收端，事件触发调用的方法中参数即为上述传递的内容
+
++ Child.vue
+
+```vue
+<template>
+    <h3>Child</h3>
+    <button @click="clickEventHandle">传递数据</button>
+</template>
+<script>
+export default {
+    methods:{
+        clickEventHandle(){
+            //自定义事件
+            this.$emit("someEvent","数据");
+        }
+    }
+}
+</script>
+```
+
+this.$emit中的第二个值"数据"即为传递给接受端的参数
+
++ ComponentEvent.vue
+
+```vue
+<template>
+    <h3>组件事件</h3>
+    <Child @someEvent="getHandle"/>
+</template>
+<script>
+import Child from './Child.vue';
+export default {
+    components:{
+        Child,
+    },
+    methods:{
+        getHandle(data){
+            console.log("receieved",data);
+        }
+    }
+}
+</script>
+```
+
+getHandle中的参数data即为接收到的数据
+
+### 组件事件+v-model
+
++ 通过watch监听检测输入框中的内容变化
++ 监听到事件后触发子传父$emit
+
+
+
+**SearchComponent.vue:**
+
+```vue
+<template>
+    搜索：<input type="text" v-model="search">
+</template>
+<script>
+export default {
+    data(){
+        return{
+            search:"",
+        }
+    },
+    watch:{
+        search(newValue,oldValue){
+            this.$emit("searchEvent",newValue);
+        }
+    },
+}
+</script>
+```
+
+**Main.vue:**
+
+```vue
+<template>
+    <h3>Main</h3>
+    <SearchComponent @searchEvent="getSearch"/>
+    <p>{{ message }}</p>
+</template>
+<script>
+import SearchComponent from './SearchComponent.vue';
+export default {
+    components:{
+        SearchComponent,
+    },
+    data(){
+        return{
+            message:""
+        }
+    },
+    methods:{
+        getSearch(search){
+            this.message=search;
+        }
+    }
+
+}
+</script>
+```
+
+## 透传Attributes
+
+传递给一个组件，却没有被该组件声明为props或emits的attribute或者v-on事件监听器。
+
+当一个组件以单个元素为根作渲染时，透传的attribute会自动被添加到根元素上
+
++ **父组件：**
+
+```vue
+<template>
+    <h3>AttributeParent</h3>
+    <AttrComponent class="attr"/><!--透传attribute-->
+</template>
+<script>
+import AttrComponent from './AttrComponent.vue';
+export default {
+    components:{
+        AttrComponent,
+    }
+}
+</script>
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>AttributeComponent</h3>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+.attr{
+    color:red;
+}
+</style>
+```
+
+此时class="attr"从父组件传到子组件
+
+<mark>最重要：子组件必须有唯一根元素！</mark>如果上述例子再加一行
+
+```html
+<h4>我是新加的元素</h4>
+```
+
+则两个标签内容均不会变红
+
+### 禁用透传Attribute
+
+增加
+
+```javascript
+inheritAttrs:false
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>AttributeComponent</h3>
+</template>
+<script>
+export default {
+    inheritAttrs:false,
+}
+</script>
+<style>
+.attr{
+    color:red;
+}
+</style>
+```
+
+## 插槽slots
+
+传递一个HTML结构
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsBase>
+    <h3>插槽标题</h3>
+    <p>插槽内容</p>
+  </SlotsBase>
+</template>
+
+<script>
+import SlotsBase from './components/SlotsBase.vue';
+export default {
+  components:{
+    SlotsBase,
+  }
+}
+</script>
+
+<style>
+</style>
+```
+
++ 子组件：
+
+```vue
+<template>
+    <slot></slot>
+    <h3>插槽基础</h3>
+    
+</template>
+<script>
+export default {
+    
+}
+</script>
+```
+
+\<slot>\</slot>标签用于放父元素传过来的部分
+
+### 渲染区域
+
+插槽内容可以访问到父组件的数据作用域，因为插槽内容本身是在父组件模板中定义的
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsTwo>
+    <h3>{{ message }}</h3>
+  </SlotsTwo>
+</template>
+
+<script>
+import SlotsTwo from './components/SlotsTwo.vue';
+export default {
+  data(){
+    return{
+      message:"插槽内容续集",
+    }
+  },
+  components:{
+    SlotsTwo,
+  }
+}
+</script>
+
+<style>
+</style>
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>Slots续集</h3>
+    <slot></slot>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+
+</style>
+```
+
+可以显示message的值"插槽内容续集"
+
+### 设置插槽默认值
+
+在两个slot标签中间放的内容是插槽的默认值，当父元素没有传递插槽元素时，会显示默认值
+
+如：
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsTwo>
+  </SlotsTwo>
+</template>
+
+<script>
+import SlotsTwo from './components/SlotsTwo.vue';
+export default {
+  data(){
+    return{
+      message:"插槽内容续集",
+    }
+  },
+  components:{
+    SlotsTwo,
+  }
+}
+</script>
+
+<style>
+</style>
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>Slots续集</h3>
+    <slot>插槽默认值</slot>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+
+</style>
+```
+
+此时，父组件没有传递任何结构，子组件插槽处显示"插槽默认值"
+
+### 具名插槽
+
+父元素处通过\<template v-slot:>或\<template #>来实现插槽的某一部分的命名，子元素通过\<slot name="">来接受对应的内容
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsTwo>
+    <template v-slot:header>
+      <h3>标题</h3>
+    </template>
+    <template #main>
+      <p>内容</p>
+    </template>
+  </SlotsTwo>
+</template>
+
+<script>
+import SlotsTwo from './components/SlotsTwo.vue';
+export default {
+  data(){
+    return{
+      message:"插槽内容续集",
+    }
+  },
+  components:{
+    SlotsTwo,
+  }
+}
+</script>
+
+<style>
+</style>
+
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>Slots续集</h3>
+    <slot name="header">插槽默认值</slot>
+    <hr>
+    <slot name="main">插槽默认值</slot>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+
+</style>
+```
+
+这样对同一个子组件的插槽内容就可以分割成多份，同时子组件也可以按需求随意的拜访这些部分。
+
+### 插槽中的数据传递
+
+有时需要插槽元素之间同时显示父组件给的内容和子组件自己的内容，这就需要子组件中内容先传递给父组件，父组件再通过插槽传递给子组件
+
+在\<slot>标签上将子组件数据通过...="..."的形式传递给父组件，父组件用v-slot=""来接受
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsAttr v-slot="slotProps">
+    <h3>{{ currentTEST }}</h3>
+    <p>{{ slotProps.msg }}</p>
+  </SlotsAttr>
+</template>
+
+<script>
+import SlotsAttr from './components/SlotsAttr.vue';
+export default {
+  data(){
+    return{
+      currentTEST:"测试内容",
+    }
+  },
+  components:{
+    SlotsAttr,
+  }
+}
+</script>
+
+<style>
+</style>
+```
+
+slotProps可改为其它名字，此变量为接收子元素所有传过来数据的集合对象，用点来访问子组件传过来的数据
+
++ 子组件：
+
+```vue
+<template>
+    <h3>slots再续集</h3>
+    <slot :msg="childMessage"></slot>
+</template>
+<script>
+export default {
+    data(){
+        return{
+            childMessage:"子组件数据",
+        }
+    }
+}
+</script>
+```
+
+首先，childMessage发送到slot上，然后父组件通过slotProps访问msg得到子组件传过去的元素
+
+<mark>注意，这里的插槽数据传递的v-slot=""和上面的起名v-slot:不一样</mark>
+
+### 具名插槽数据传递
+
+核心语法：(即v-slot和=之间多加了一个:name, name是插槽一部分的名字)
+
+```vue
+v-slot:name=""
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>slots再续集</h3>
+    <slot name="name1" :msg="childMessage"></slot>
+    <slot name="name2" :demo="demoMessage"></slot>
+</template>
+<script>
+export default {
+    data(){
+        return{
+            childMessage:"子组件数据",
+            demoMessage:"子组件数据2",
+        }
+    }
+}
+</script>
+```
+
++ 父组件：
+
+```vue
+<template>
+  <SlotsAttr>
+    <template #name1="slotProps">
+      <h3>{{ currentTEST }}</h3>
+      <p>{{ slotProps.msg }}</p>
+    </template>
+    <template #name2="slotProps">
+      <p>{{slotProps.demo}}</p>
+    </template>
+  </SlotsAttr>
+
+</template>
+
+<script>
+import SlotsAttr from './components/SlotsAttr.vue';
+export default {
+  data(){
+    return{
+      currentTEST:"测试内容",
+    }
+  },
+  components:{
+    SlotsAttr,
+  }
+}
+</script>
+
+<style>
+</style>
+```
+

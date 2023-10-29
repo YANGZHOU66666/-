@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深拷贝和浅拷贝</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    //对基本数据类型叫赋值，不叫拷贝
+    let a = 5;
+    let b = a;
+    b = 3;
+
+
+    let arr = [1, 2, 3];
+    let newArr = arr;
+    newArr.push(4); //会影响arr
+    console.log(arr, newArr);
+    //数组与对象的赋值都是浅拷贝
+
+    let arr2 = [1, 2, 3];
+    let newArr2 = [...arr];
+    newArr2.push(4);
+    console.log(arr2, newArr2);
+    //解构赋值：针对一维数组是深拷贝
+
+    let arr3 = [[1, 2, 3], [4, 5, 6]];
+    let newArr3 = [...arr3];
+    newArr3[0].push(888);
+    newArr3.push([0, 1]);
+    console.log(newArr3, arr3);
+    //解构赋值：针对多维是浅拷贝，注意这里newArr3新push的数组[0,1]在arr3里没有
+
+    //深拷贝用法：
+    let list = [{ id: 1, stuName: '小明', class: '五年二班' }, { id: 2, stuName: '小红', class: '五年三班' }, { id: 3, stuName: '小绿', class: "五年四班" }];
+    let newList = JSON.parse(JSON.stringify(list));
+    newList.push({ id: 888 });
+    console.log(newList, list);
+</script>
+
+</html>

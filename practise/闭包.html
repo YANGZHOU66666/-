@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闭包</title>
+</head>
+<body>
+    
+</body>
+<script>
+function outer(){
+    let a=10;
+    return function(){
+        a++;
+        console.log('函数被调用了${a}次');
+    }
+}
+const fun=outer();
+    setTimeout("fun()",2000);
+    console.log("aaaaa");
+    setTimeout("fun()",2000);
+    fun();
+    setTimeout("fun()",2000);
+</script>
+</html>
