@@ -1,11 +1,11 @@
 <template>
   <div class="common-layout">
     <el-container class="lay-container">
-      <CommonAside/>
+      <CommonAside />
       <el-container class="r-container">
-        <CommonHeader/>
+        <CommonHeader />
         <el-main>
-          <router-view/>
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -13,21 +13,19 @@
 </template>
 
 <script>
-import { defineComponent } from "vue"
-import CommonHeader from '../components/CommonHeader.vue'
-import CommonAside from '../components/CommonAside.vue'
+import { defineComponent } from "vue";
+import CommonHeader from "../components/CommonHeader.vue";
+import CommonAside from "../components/CommonAside.vue";
 export default defineComponent({
-  setup() {
-    
-  },
-  components:{
+  setup() {},
+  components: {
     CommonHeader,
     CommonAside,
-  }
-})
+  },
+});
 </script>
 <style scoped>
-.r-container{
+.r-container {
   flex-wrap: wrap;
 }
 </style>

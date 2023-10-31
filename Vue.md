@@ -1927,3 +1927,428 @@ export default {
 </style>
 ```
 
+## 组件的生命周期
+
+每个Vue组件实例在创建时要经历异世界初始化步骤，如设置好数据帧听、编译模板、挂载实例到DOM，以及在数据改变时更新DOM。在此过程中，它也会运行名为生命周期钩子的函数，让开发者有机会在特定阶段运行自己的代码
+
++ 声明周期示意图：
+
+![](.\assets\vue1.png)
+
+```
+生命周期函数：
+创建期：beforeCreate  created(组件创建完成)
+挂载期：beforeMounte mounted(完成渲染)
+更新期：beforeUpdate updated(数据更新，再次渲染 的 循环)
+销毁期：beforeUnmounte  unmounted(组件销毁)
+```
+
+页面刚开始加载完后beforeCreate, created, beforeMounte, mounted函数调用
+
+一旦页面上数据更新，beforeUpdate和updated调用一次
+
++ **用到的Vue文件：**
+
+```vue
+<template>
+  <h3>组件生命周期</h3>
+  <p>{{ message }}</p>
+  <button @click="updateHandle">更新数据</button>
+</template>
+<script>
+/*
+生命周期函数：
+创建期：beforeCreate  created(组件创建完成)
+挂载期：beforeMounte Mounted(完成渲染)
+更新期：beforeUpdate updated(数据更新，再次渲染 的 循环)
+销毁期：beforeUnmounte  unmounted(组件销毁)
+*/
+
+export default {
+
+  data(){
+    return{
+      message:"更新之前",
+    }
+  },
+  methods:{
+    updateHandle(){
+      this.message="更新之后";
+    }
+  },
+  beforeCreate(){
+    console.log("组件创建之前");
+  },
+  created(){
+    console.log("组件创建之后");
+  },
+  beforeMount(){
+    console.log("组件渲染之前");
+  },
+  mounted(){
+    console.log("组件渲染之后");
+  },
+  beforeUpdate(){
+    console.log("组件更新之前");
+  },
+  updated(){
+    console.log("组件更新之后");
+  },
+  beforeUnmount(){
+    console.log("组件销毁之前");
+  },
+  unmounted(){
+    console.log("组件销毁之后");
+  },
+}
+</script>
+```
+
+
+
+### 生命周期应用
+
+#### 通过ref获取元素DOM结构
+
+在生命周期函数中可以根据ref名字打印相关元素
+
+```vue
+<template>
+  <h3>组件生命周期应用</h3>
+  <p ref="name">百战程序员</p>
+</template>
+<script>
+/*
+生命周期函数：
+创建期：beforeCreate  created(组件创建完成)
+挂载期：beforeMounte Mounted(完成渲染)
+更新期：beforeUpdate updated(数据更新，再次渲染 的 循环)
+销毁期：beforeUnmounte  unmounted(组件销毁)
+*/
+import UserComponent from './components/UserComponent.vue';
+import MyComponent from './components/MyComponent.vue';
+export default {
+  components:{
+    UserComponent,
+    MyComponent,
+  },
+  data(){
+    return{
+      message:"更新之前",
+    }
+  },
+  methods:{
+    updateHandle(){
+      this.message="更新之后";
+    }
+  },
+  beforeMount(){
+    console.log(this.$refs.name);
+  },
+  mounted(){
+    console.log(this.$refs.name);
+  },
+}
+</script>
+```
+
+beforeMount()里面打印的无效，因为组件还没渲染完
+
+mounted()里面打印的有效
+
+#### 模拟网络请求渲染数据
+
+在mounted()函数里将网络传过来的数据赋值给data()中的相应变量
+
+这样就可以在渲染之后传递变量
+
+案例略
+
+## 动态组件
+
+通过\<component>标签+is属性可以动态设定这个位置放的组件
+
+```vue
+<template>
+    <component :is="tabComponent"></component>
+    <button @click="changeHandle">切换组件</button>
+</template>
+<script>
+import ComponentA from './ComponentA.vue';
+import ComponentB from './ComponentB.vue';
+export default {
+    data(){
+        return{
+            tabComponent:"ComponentA",
+        }
+    },
+    methods:{
+        changeHandle(){
+            this.tabComponent=this.tabComponent =='ComponentA'?'ComponentB':'ComponentA';
+        }
+    },
+    components:{
+        ComponentA,
+        ComponentB,
+    }
+}
+</script>
+```
+
+### 组件保持存活
+
+当使用\<component :is="">来切换组件时，被切换掉的组件会被卸载（进入卸载期），在外面包裹一个\<keep-alive>\</keep-alive>保持存活
+
++ 测试卸载：（父组件即为上面的代码）
+
+```vue
+<template>
+    <h3>ComponentA</h3>
+</template>
+<script>
+export default {
+    beforeMounte(){
+        console.log("组件卸载之前");
+    },
+    mounted(){
+        console.log("组件卸载之后");
+    },
+}
+</script>
+```
+
+每两次切换会打印一次组件卸载
+
++ 避免卸载：用\<keep-alive>\</keep-alive>标签保护
+
+```vue
+<template>
+    <keep-alive>
+        <component :is="tabComponent"></component>
+    </keep-alive>
+    <button @click="changeHandle">切换组件</button>
+</template>
+<script>
+import ComponentA from './ComponentA.vue';
+import ComponentB from './ComponentB.vue';
+export default {
+    data(){
+        return{
+            tabComponent:"ComponentA",
+        }
+    },
+    methods:{
+        changeHandle(){
+            this.tabComponent=this.tabComponent =='ComponentA'?'ComponentB':'ComponentA';
+        }
+    },
+    components:{
+        ComponentA,
+        ComponentB,
+    }
+}
+</script>
+```
+
+子组件：
+
+```vue
+<template>
+    <h3>ComponentA</h3>
+    <p>{{ message }}</p>
+    <button @click="changeData">更换数据</button>
+</template>
+<script>
+export default {
+    beforeMounte(){
+        console.log("组件卸载之前");
+    },
+    mounted(){
+        console.log("组件卸载之后");
+    },
+    data(){
+        return{
+            message:"老数据",
+        }
+    },
+    methods:{
+        changeData(){
+            this.message="新数据";
+        }
+    }
+}
+</script>
+```
+
+## 异步组件
+
+在大型项目中，我们有时可能拆分应用为更小的快，并仅在需要时再从服务器加载相关组件。Vue提供了DefineAsyncComponent来实现此功能
+
+在父组件导入子组件的时候用如下语法：
+
+```vue
+const ComponentB=defineAsyncComponent(()=>{
+    import('./ComponentB.vue');
+})
+```
+
+那么只有ComponentB要用的时候才会引入
+
+这样加快初始时导入速度
+
+## 依赖注入
+
+父组件向子组件传递数据需要props，但当组件有很多层，需要向多代后辈传递数据时，会很麻烦
+
+使用provide()和inject进行跨辈传输：
+
++ 祖先组件：
+
+```vue
+<template>
+  <h3>祖宗</h3>
+</template>
+<script>
+import Parent from './components/Parent.vue'
+export default {
+  provide:{
+    message:"爷爷的财产",
+  },
+  components:{
+    Parent,
+  }
+}
+</script>
+```
+
++ 子组件：
+
+```vue
+<template>
+    <h3>Child</h3>
+    <p>{{ message }}</p>
+</template>
+<script>
+export default {
+    inject:["message"],
+    props:{
+        title:{
+            type:String,
+        },
+    },
+}
+</script>
+```
+
+同时，依赖注入也可以传递祖先组件的动态数据
+
+注意这里必须用provide(){return{}}的格式，不能用provide:{}的格式了
+
++ 祖先组件：
+
+```vue
+<template>
+  <h3>祖宗</h3>
+  <Parent title="祖宗的财产" />
+</template>
+<script>
+import Parent from "./components/Parent.vue";
+export default {
+  data() {
+    return {
+      msg: "爷爷的财产!!!",
+    };
+  },
+  provide(){
+    return{
+      message: this.msg,
+    }
+  },
+  components: {
+    Parent,
+  },
+};
+</script>
+```
+
+也可以在子组件处将收到的值赋值给子组件的data：
+
++ 子组件：
+
+```vue
+<template>
+  <h3>Child</h3>
+  <p>{{ title }}</p>
+  <p>{{ fullMessage }}</p>
+</template>
+<script>
+export default {
+  inject: ["message"],
+  data() {
+    return {
+      fullMessage: this.message,
+    };
+  },
+  props: {
+    title: {
+      type: String,
+    },
+  },
+};
+</script>
+```
+
++ **温馨提示：**
+
+Provide和inject只能由上到下的传递，不能从下到上
+
+可以在整个应用层面提供依赖，修改main.js中的内容：
+
+```javascript
+const app=createApp(App)
+
+app.provide("globalData","我是全局数据")
+
+app.mount('#app')
+```
+
+这样就可以在任意地方inject
+
+## Vue应用
+
+### 应用实例
+
+每个Vue应用都是通过createApp函数创建一个新的应用实例
+
+```javascript
+import { createApp } from 'vue'
+
+const app=createApp({
+  /*根组件选项*/
+})
+
+```
+
+### 根组件
+
+传入createApp的对象实际上是一个组件，每个应用都需要一个“根组件”，其他组件将作为其子组件
+
+```javascript
+import { createApp } from 'vue'
+//导入根组件：
+import App from './App.vue'
+const app=createApp(App)//创建vue实例对象
+```
+
+app: Vue的实例对象
+
+### 挂载应用
+
+```javascript
+app.mount('#app')
+```
+
+挂载在index.html的id="app"的div上
+
+
+
