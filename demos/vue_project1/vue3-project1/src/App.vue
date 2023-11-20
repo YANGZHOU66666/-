@@ -2,8 +2,14 @@
 </script>
 
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
-<style scoped>
+<style>
+html,
+body,
+#app {
+  height: 100%;
+}
+
 </style>

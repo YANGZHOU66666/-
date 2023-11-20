@@ -1,27 +1,96 @@
 <template>
   <el-aside width="200px">
-    <el-menu class="el-menu-vertical-demo">
-      <el-menu-item index="2">
-        <el-icon><icon-menu /></el-icon>
-        <span>Navigator Two</span>
+    <el-menu
+      class="el-menu-vertical-demo"
+      background-color="#545c64"
+      text-color="#fff"
+      :collapse="false"
+    >
+      <el-menu-item
+        :index="item.path"
+        v-for="item in noChildren()"
+        :key="item.path"
+        class="menu-item"
+      >
+        <component class="icons" :is="item.icon"></component>
+        <span>{{ item.label }}</span>
       </el-menu-item>
-      <el-sub-menu index="1">
+      <el-sub-menu
+        :index="item.path"
+        v-for="item in hasChildren()"
+        :key="item.path"
+      >
         <template #title>
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
+          <component class="icons" :is="item.icon"></component>
+          <span>{{ item.label }}</span>
         </template>
-        <el-menu-item-group title="Group One">
-          <el-menu-item index="1-1">item one</el-menu-item>
-          <el-menu-item index="1-2">item two</el-menu-item>
+        <el-menu-item-group>
+          <el-menu-item
+            :index="subItem.path"
+            v-for="(subItem, subIndex) in item.children"
+            :key="subItem.subIndex"
+            ><component class="icons" :is="subItem.icon"></component>
+            <span>{{ subItem.label }}</span></el-menu-item
+          >
         </el-menu-item-group>
-        <el-menu-item-group title="Group Two">
-          <el-menu-item index="1-3">item three</el-menu-item>
-        </el-menu-item-group>
-        <el-sub-menu index="1-4">
-          <template #title>item four</template>
-          <el-menu-item index="1-4-1">item one</el-menu-item>
-        </el-sub-menu>
       </el-sub-menu>
     </el-menu>
   </el-aside>
 </template>
+
+<script>
+export default {
+  setup() {
+    const list = [
+      {
+        path: "/user",
+        name: "user",
+        label: "用户管理",
+        icon: "user",
+        url: "UserManage/UserManage",
+      },
+      {
+        label: "其他",
+        icon: "location",
+        path: "/other",
+        children: [
+          {
+            path: "/page1",
+            name: "page1",
+            label: "页面1",
+            icon: "setting",
+            url: "Other/PageOne",
+          },
+          {
+            path: "/page2",
+            name: "page2",
+            label: "页面2",
+            icon: "setting",
+            url: "Other/PageTwo",
+          },
+        ],
+      },
+    ];
+    const noChildren = () => {
+      return list.filter((item) => !item.children);
+    };
+    const hasChildren = () => {
+      return list.filter((item) => item.children);
+    };
+    return {
+      noChildren,
+      hasChildren,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.icons {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.el-menu {
+  border-right: none;
+}
+</style>

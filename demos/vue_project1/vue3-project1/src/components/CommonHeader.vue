@@ -1,7 +1,12 @@
 <template>
   <el-header>
     <div class="l-content">
-      <el-icon><Menu/></el-icon>
+      <el-button size="small" plain>
+        <el-icon size="20px">
+          <Menu/>
+        </el-icon>
+      </el-button>
+      <h3>首页</h3>
     </div>
     <div class="r-content">
       <el-dropdown>
@@ -33,16 +38,29 @@ export default {
 };
 </script>
 
-<style scoped>
-header {
+<style lang="less" scoped>
+.el-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  background-color: black;
 }
-.user {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.r-content {
+  .user {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+}
+.l-content {
+  display: flex;
+  align-items: center;
+  .el-button{
+    margin-right:20px;
+  }
+  h3{
+    color: #fff;
+  }
 }
 </style>
