@@ -152,7 +152,26 @@ var arr2=[];//利用字面量创建数组
 
 ### 遍历数组
 
-暂略，等forEach会了再更
+这里只记录forEach，模板：
+
+（即对某个集合的每个元素做参数执行一次某函数）
+
+```
+Array().forEach(function)
+```
+
+如：
+
+```javascript
+[1,4,8,9].forEach(item=>{
+    if(item==4){
+        return;
+    }
+    console.log(item);
+})
+```
+
+
 
 ## 函数
 
@@ -190,7 +209,7 @@ function fn(){
 }
 ```
 
-注意，函数内部和外面变量名可以相同，但是函数内用的是函数内的变量：
+<mark>注意，函数内部和外面变量名可以相同，但是函数内用的是函数内的变量：</mark>
 
 ```javascript
 var num=10;
@@ -218,6 +237,205 @@ function fn(){
 fn();
 console.log(num2);//在函数里不声明直接赋值，在外面可以获取（特性，平常不使用）
 ```
+
+### 预解析
+
++ 问题一：
+
+```javascript
+console.log(num);
+```
+
+报错
+
++ 问题二：
+
+```
+console.log(num);
+var num=12;
+```
+
+实际打印undefined
+
++ 问题三：
+
+```javascript
+fn(11);
+function fn(num){
+    console.log(num);
+}
+```
+
+打印11
+
++ 问题四：
+
+```javascript
+fn(12);
+var fn=function(num){
+    console.log(num);
+}
+```
+
+报错
+
+#### 预解析定义
+
+我们js引擎运行js分为两步：预解析、代码执行
+
+1. 预解析 js引擎会把js里面所有的var和function定义的函数提升到当前作用域的最前面
+2. 代码执行，按照代码书写的顺序从上往下执行
+
+预解析分为变量预解析（变量提升）和函数预解析（函数提升）
+
+1. 变量提升，就是把所有变量声明提升到当前作用域最前面，不提升赋值操作
+
+```javascript
+console.log(num);
+var num=10;
+```
+
+等价于
+
+```javascript
+var num;
+console.log(num);
+num=10;
+```
+
+同理，
+
+```javascript
+fn();
+var fn=function(){
+    console.log(12);
+}
+```
+
+等价于
+
+```javascript
+var fn;
+fn();
+fn=function(num){
+    console.log(12);
+}
+```
+
+2. 函数提升：所有的函数声明提升到当前作用域的最前面，不调用函数
+
+这就解决了问题三
+
+#### 练习（坑）
+
+```javascript
+var num=10;
+function fun(){
+    console.log(num);
+    var num=20;
+}
+fun();
+```
+
+输出结果是undefined，注意前面的作用域章节，函数内部声明的重名变量，在函数内调用优先用函数内的这个变量（注意函数内声明的num提升到`console.log()`上面一行
+
+#### 坑题
+
+```javascript
+fn();
+function fn(){
+    var a=b=c=9;
+    console.log(a);
+    console.log(b);
+    console.log(c);
+}
+console.log(c);
+console.log(b);
+console.log(a);
+```
+
+注意var a=b=c=9;等价于var a=9;b=9;c=9;
+
+故b, c提升为全局变量，而a在函数内部
+
+## 防抖和节流
+
+**防抖：**连续触发事件，但是在设定的一段时间中只执行最后一次
+
+如：设定1000ms执行，触发事件500ms后又触发一次，按照后一次开始计时，等1000ms执行
+
+**key：“重新开始”**
+
+**应用场景：**搜索框搜索输入、文本编辑器实时保存
+
+**代码思路：**利用定时器，每次触发先清除之前的定时器
+
+```javascript
+let timelD = null;
+document.queryselector('.ipt').onkeyup = function () {
+    if (timelD != null) {
+        clearTimeout(timelD);
+    }
+    timelD = setTimeout(() => {
+        console.log("防抖");
+    }, 1000);
+}
+```
+
+
+
+
+
+**节流：**单位时间内频繁触发事件，只执行一次
+
+**应用场景：**高频事件，如快速点击、鼠标滑动、resize事件、scroll事件
+
+**代码思路：**利用定时器，等定时器执行完毕，才开启定时器
+
+```javascript
+let timeID=null;
+document.queryselector('.ipt').onmouseover=function(){
+    if(timeID!=null){
+        return;
+    }
+    timeID=setTimeout(() => {
+        console.log("节流");
+        timeID=null;
+    }, 1000);
+}
+```
+
+
+
+
+
+## 原型与原型链
+
+原型：每个函数都有prototype属性，称之为原型
+
+因为这个属性的值是个对象，也称为原型对象
+
+原型可以放一些属性和方法，共享给实例对象使用
+
+```javascript
+const arr= new Array(1,2,3);
+arr.reverse();//挂载在Array.prototype上
+arr.sort();
+```
+
+\_\_proto\_\_：每个对象都有\_\_proto\_\_属性
+
+**作用**：这个属性指向它的原型对象
+
+```javascript
+console.log(arr.__proto__===Array.prototype)//true
+```
+
+![](.\assets\proto.png)
+
+
+
+原型链：对象都有\_\_proto\_\_属性，这个属性指向它的原型对象，原型对象也是对象，也有\_\_proto\_\_属性，指向原型对象的原型对象，这样一层一层形成的链式结构成为原型链，最顶层找不到则返回null
 
 ## 闭包
 
