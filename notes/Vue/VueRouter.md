@@ -198,8 +198,6 @@ createApp(App).use(router).mount('#app')
 
 + **关键点1：**用`v-for`遍历，写成动态形式，而非一个一个手敲
 
-
-
 ```html
 <!--App.vue-->
 <template>
@@ -222,8 +220,6 @@ export default {
 <style scoped>
 </style>
 ```
-
-
 
 ### router/index.js中配置路由信息
 

@@ -2037,9 +2037,9 @@ export default {
 
 每个Vue组件实例在创建时要经历异世界初始化步骤，如设置好数据帧听、编译模板、挂载实例到DOM，以及在数据改变时更新DOM。在此过程中，它也会运行名为生命周期钩子的函数，让开发者有机会在特定阶段运行自己的代码
 
-+ 声明周期示意图：
++ 生命周期示意图：
 
-![](..\..\assets\vue1.png)
+![](.\assets\vue1.png)
 
 ```
 生命周期函数：
@@ -2049,11 +2049,11 @@ export default {
 销毁期：beforeUnmounte  unmounted(组件销毁)
 ```
 
-页面刚开始加载完后beforeCreate, created, beforeMounte, mounted函数调用
+页面刚开始加载完后`beforeCreate`, `created`, `beforeMounte`, `mounted`函数调用
 
-一旦页面上数据更新，beforeUpdate和updated调用一次
+一旦页面上数据更新，`beforeUpdate`和`updated`调用一次
 
-+ **用到的Vue文件：**
++ **用到的`Vue`文件：**
 
 ```vue
 <template>
@@ -2473,7 +2473,85 @@ app: Vue的实例对象
 app.mount('#app')
 ```
 
-挂载在index.html的id="app"的div上
+挂载在`index.html`的`id="app"`的div上
+
+
+
+## Vue3 组合式 API
+
+### 组合式API入口setup
+
+```vue
+<script>
+export default{
+  setup(){
+    
+  },
+  beforeCreate(){
+
+  }
+}
+</script>
+```
+
+`setup()`会在`beforeCreate()`钩子之前执行
+
+#### 声明数据和函数
+
+```vue
+<template>
+  App
+  {{ message }}
+  <button @click="logMessage">log</button>
+</template>
+<script>
+export default{
+  setup(){
+    //数据
+    const message='this is message';
+    //函数
+    const logMessage=function(){
+      console.log(message);
+      return message;
+    }
+    return{
+      message,
+      logMessage,
+    }
+  },
+  beforeCreate(){
+
+  }
+}
+</script>
+```
+
+记得一定要把声明的变量return出去
+
+<mark>注意这里没有用this，Vue3不使用this，this并不指向组件实例，而是undefined</mark>
+
+#### \<script setup>语法糖
+
+```vue
+<template>
+  App
+  {{ message }}
+  <button @click="logMessage">log</button>
+</template>
+<script setup>
+//数据
+const message = "this is message";
+//函数
+const logMessage = function () {
+  console.log(message);
+  return message;
+};
+</script>
+```
+
+在\<script setup>语法糖中，组件只需要引入即可顺便注册，不需要单独写注册
+
+### reactive()
 
 
 

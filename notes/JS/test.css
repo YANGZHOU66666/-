@@ -1,0 +1,14 @@
+.size16{
+    font-size: 16px;
+    -webkit-transform:scale(0.5);
+    float:left;
+}
+
+.size12{
+    font-size: 12px;
+    clear:left;
+}
+.size8{
+    font-size: 8px;
+    
+}
