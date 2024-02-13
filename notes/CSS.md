@@ -349,11 +349,11 @@ flex-end——按交叉轴的终点方向对齐
 
 center——按交叉轴中点对齐
 
-![](.\assets\flex_align_items4.png)
+![](..\assets\flex_align_items4.png)
 
 baseline——文字基线对齐
 
-![](D:\本科\Frontend\assets\flex_align_items5.png)
+![](..\assets\flex_align_items5.png)
 
 #### 主轴对齐：justify-content
 

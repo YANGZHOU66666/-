@@ -217,10 +217,6 @@ const person={
 
 
 
-### SetTimeOut
-
-第一个参数为函数（注意必须加双引号），第二个参数为等待事件，单位为ms
-
 ### for, while, do while循环
 
 略
@@ -1193,6 +1189,10 @@ console.log(resultOfMap);//[2,4,6,8,10]
 ```
 
 注意：map()的回调函数里一定要有返回值，否则返回的数组中每项都是undefined
+
+## setTimeout()和setInterval()的区别
+
++ **最表层：功能上的区别**
 
 ## \==和\===的区别
 

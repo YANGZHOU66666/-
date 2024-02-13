@@ -1,11 +1,11 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <CommonAside/>
+      <CommonAside />
       <el-container>
-        <CommonHeader/>
+        <CommonHeader />
         <el-main>
-            <router-view/>
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -13,10 +13,19 @@
 </template>
 
 <script setup>
-import CommonHeader from '../components/CommonHeader.vue'
-import CommonAside from '../components/CommonAside.vue'
+import CommonHeader from "../components/CommonHeader.vue";
+import CommonAside from "../components/CommonAside.vue";
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.el-container {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.common-layout {
+  height: 100%;
+  & > .el-container {
+    height: 100%;
+  }
+}
 </style>

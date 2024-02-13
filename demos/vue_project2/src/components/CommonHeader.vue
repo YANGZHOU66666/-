@@ -1,14 +1,15 @@
 <template>
   <el-header>
     <div class="l-content">
-      <el-button size="small">
+      <el-button size="small" @click="handleCollapse">
         <el-icon :size="20"><Menu /></el-icon>
       </el-button>
+      <h3>首页</h3>
     </div>
     <div class="r-content">
       <el-dropdown>
         <span class="el-dropdown-link">
-          <img class="user" src="../assets/user.png" />
+          <img class="user" :src="getImgSrc('user')" />
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -21,12 +22,38 @@
   </el-header>
 </template>
 
-<script></script>
+<script setup>
+import { useStore } from "vuex";
+const store = useStore();
+const getImgSrc = (user) => {
+  return new URL(`../assets/images/${user}.png`, import.meta.url).href;
+};
+const handleCollapse = () => {
+  store.commit("updateIsCollapse");
+};
+</script>
 
 <style>
+.el-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+}
 .r-content .user {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+}
+
+.l-content {
+  display: flex;
+  align-items: center;
+}
+
+.l-content h3 {
+  margin-left: 20px;
 }
 </style>
