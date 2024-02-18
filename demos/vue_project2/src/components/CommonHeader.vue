@@ -1,10 +1,13 @@
 <template>
   <el-header>
     <div class="l-content">
-      <el-button size="small" @click="handleCollapse">
+      <el-button size="small" @click="handleCollapse()">
         <el-icon :size="20"><Menu /></el-icon>
       </el-button>
-      <h3>首页</h3>
+      <router-link to="/" class="first-breadcrumb" @click="toHome()"
+        >首页</router-link
+      >
+      <span v-if="$store.state.currentMenu!=null" class="second-breadcrumb"> > {{ $store.state.currentMenu.label }}</span>
     </div>
     <div class="r-content">
       <el-dropdown>
@@ -31,6 +34,12 @@ const getImgSrc = (user) => {
 const handleCollapse = () => {
   store.commit("updateIsCollapse");
 };
+/*const current = () => {
+  return store.state.currentMenu;
+};*/
+const toHome = () => {
+  store.commit("selectMenu", { name: "home" });
+};
 </script>
 
 <style>
@@ -53,7 +62,17 @@ const handleCollapse = () => {
   align-items: center;
 }
 
-.l-content h3 {
-  margin-left: 20px;
+.l-content .el-button {
+  margin-right: 20px;
+}
+.l-content .first-breadcrumb {
+  color: #fff;
+  font-size: medium;
+  margin-right: 10px;
+}
+.l-content .second-breadcrumb {
+  color: #bbb;
+  font-size: medium;
+  margin-right: 10px;
 }
 </style>

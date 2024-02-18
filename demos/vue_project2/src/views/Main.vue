@@ -1,9 +1,10 @@
 <template>
   <div class="common-layout">
-    <el-container>
+    <el-container style="flex-wrap: nowrap">
       <CommonAside />
       <el-container>
         <CommonHeader />
+        <CommonTab />
         <el-main>
           <router-view />
         </el-main>
@@ -15,6 +16,7 @@
 <script setup>
 import CommonHeader from "../components/CommonHeader.vue";
 import CommonAside from "../components/CommonAside.vue";
+import CommonTab from "../components/CommonTab.vue";
 </script>
 
 <style lang="less" scoped>

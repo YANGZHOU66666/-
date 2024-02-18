@@ -579,5 +579,603 @@ const onClickMenu=(item)=>{
 
 ## home内容实现
 
-### 栅格布局
+### 栅格布局、.el-table的使用
 
+基本是用ElementUI的简单实现，均为细节，代码如下：
+
+```vue
+<template>
+  <el-row class="home" :gutter="20">
+    <el-col :span="8" style="margin-top: 20px">
+      <el-card shadow="hover">
+        <div class="user">
+          <img src="../../assets/images/user.png" />
+          <div class="user-info">
+            <p class="name">Admin</p>
+            <p class="role">超级管理员</p>
+          </div>
+        </div>
+        <template #footer>
+          <div class="login-info">
+            <p>上次登陆时间:<span>2022-7-11</span></p>
+            <p>上次登陆地点:<span>Beijing</span></p>
+          </div>
+        </template>
+      </el-card>
+      <el-card style="margin-top: 20px" shadow="hover">
+        <el-table :data="tableData">
+          <el-table-column v-for="(val,key) in tableLabel" :prop="key" :label="val" :key="key"></el-table-column>
+        </el-table>
+      </el-card>
+    </el-col>
+    <el-col :span="16" style="margin-top: 20px"></el-col>
+  </el-row>
+</template>
+
+<script setup>
+const tableData = [
+  {
+    name: "oppo",
+    todayBuy: 500,
+    monthBuy: 3500,
+    totalBuy: 22000,
+  },
+  {
+    name: "vivo",
+    todayBuy: 300,
+    monthBuy: 2200,
+    totalBuy: 24000,
+  },
+  {
+    name: "苹果",
+    todayBuy: 800,
+    monthBuy: 4500,
+    totalBuy: 65000,
+  },
+  {
+    name: "小米",
+    todayBuy: 1200,
+    monthBuy: 6500,
+    totalBuy: 45000,
+  },
+  {
+    name: "三星",
+    todayBuy: 300,
+    monthBuy: 2000,
+    totalBuy: 34000,
+  },
+  {
+    name: "魅族",
+    todayBuy: 350,
+    monthBuy: 3000,
+    totalBuy: 22000,
+  },
+];
+const tableLabel = 
+  {
+    name: "课程",
+    todayBuy: "今日购买",
+    monthBuy: "本月购买",
+    totalBuy: "总购买",
+  }
+;
+</script>
+
+<style lang="less">
+.home {
+  .user {
+    display: flex;
+    align-items: center;
+  }
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 40px;
+  }
+}
+.login-info {
+  p {
+    line-height: 30px;
+    font-size: 14px;
+    color: #999;
+    span {
+      margin-left: 60px;
+      color: #666;
+    }
+  }
+}
+</style>
+```
+
+## 本地mock和线上mock的使用
+
+**mock：**用于模拟后端发送请求，用于当后端还没有给具体接口数据时前端先测试
+
+先安装mock依赖、axios依赖：
+
+```
+cnpm install mockjs -S
+cnpm install axios -S
+```
+
+### 本地mock
+
+#### 配置mock
+
+src下新建api文件夹，api文件夹下放mockData文件夹和mock.js作为总配置文件；mockData文件夹放测试数据。这里先放一个home.js如下：
+
+```javascript
+export default {
+    getHomeData:()=>{
+        return {
+            code:200,
+            data:{
+                tableData:[
+                    {
+                      name: "oppo",
+                      todayBuy: 500,
+                      monthBuy: 3500,
+                      totalBuy: 22000,
+                    },
+                    {
+                      name: "vivo",
+                      todayBuy: 300,
+                      monthBuy: 2200,
+                      totalBuy: 24000,
+                    },
+                    {
+                      name: "苹果",
+                      todayBuy: 800,
+                      monthBuy: 4500,
+                      totalBuy: 65000,
+                    },
+                    {
+                      name: "小米",
+                      todayBuy: 1200,
+                      monthBuy: 6500,
+                      totalBuy: 45000,
+                    },
+                    {
+                      name: "三星",
+                      todayBuy: 300,
+                      monthBuy: 2000,
+                      totalBuy: 34000,
+                    },
+                    {
+                      name: "魅族",
+                      todayBuy: 350,
+                      monthBuy: 3000,
+                      totalBuy: 22000,
+                    },
+                ]
+            }
+        }
+    }
+}
+```
+
+export一个函数组成的对象，作为返回数据的接口
+
+再在mock.js中拦截请求：
+
+```javascript
+import Mock from 'mockjs'
+import homeApi from './mockData/home.js'
+//拦截请求
+Mock.mock('/home/getData', homeApi.getHomeData)
+```
+
+这样，mock就配置好了，可以在vue文件中模拟接收请求了
+
+#### 在Home.vue中模拟
+
+```javascript
+import { onMounted, ref} from 'vue';
+import axios from "axios";
+const tableData = ref([]);//ref的数据才能和DOM中的动态绑定
+const getTableList=async ()=>{
+  await axios.get('/home/getData').then((res)=>{
+    tableData.value=res.data.data.tableData;
+  });//用mock的接口模拟请求返回的数据
+}
+onMounted(() => {//生命周期钩子，一挂载好就下载数据
+  getTableList();
+});
+```
+
+### 线上mock
+
++ 这里使用apifox
+
+创建新接口->设置接口的基本格式，然后就可以自动生成满足条件的json数据了。
+
+保存后会给一个URL，拿这个URL直接发请求即可
+
+如下：
+
+```javascript
+const getTableList=async ()=>{
+  await axios.get('http://127.0.0.1:4523/m1/4022542-0-default/getTableData').then((res)=>{
+    tableData.value=res.data.data.tableData;
+  });
+}
+```
+
+相比上例，仅仅修改了get()的参数，效果相同
+
+## 二次封装axios
+
+### 原因
+
+**统一管理接口：**多个axios请求会有一部分相同的地方（如请求头、返回数据对状态码的分类讨论等），这时如果每个请求重新写一遍这些东西，会很麻烦。
+
+### 操作
+
++ src/api文件夹下新建request.js文件
+
++ src文件夹下新建config文件夹，内建index.js文件作为环境配置文件
+
+一般在企业级项目里面有三个环境：开发环境、测试环境、线上环境
+
+配置文件用于请求前选择环境、选择mockAPI的前缀：
+
+```javascript
+/*
+* config/index.js 环境配置文件
+* 一般在企业项目里有三个环境：开发环境、测试环境、线上环境
+*/
+
+//当前的环境
+const env=import.meta.env.MODE || 'prod'
+const EnvConfig = {
+    development:{//开发环境
+        baseApi: '/api',
+        mockApi: 'http://127.0.0.1:4523/m1/4022542-0-default/'
+    },
+    test:{//测试环境
+        baseApi: '//test.future.com/api',
+        mockApi: 'http://127.0.0.1:4523/m1/4022542-0-default/'
+    },
+    production:{//生产环境
+        baseApi: '//future.com/api',
+        mockApi: 'http://127.0.0.1:4523/m1/4022542-0-default/'
+    }
+}
+export default{
+    env,
+    mock:true,//mock的总开关
+    ...EnvConfig[env]//baseApi和mockApi
+}
+```
+
+#### 追加更新
+
+apifox支持云端mock，将上述mockApi的值换成`https://mock.apifox.com/m1/4022542-0-default`
+
++ src/api文件夹下新建request.js，作为封装的核心函数
+
+创建axios实例对象->对请求前、请求后的数据做统一处理->request具体封装（调整参数中信息封装到axios对象中并返回），将request接口导出，作为统一封装函数
+
+```javascript
+//request.js
+import axios from 'axios'
+import config from '../config/index.js'
+import { ElMessage } from 'element-plus'
+const NETWORK_ERROR_MSG = '网络请求异常，请稍后重试.....'
+//创建一个axios实例对象
+const service = axios.create({
+  baseURL:config.baseApi,
+})
+
+//在请求之前做一些事情
+service.interceptors.request.use((req)=>{
+  //可以自定义header
+  // jwt-token认证的时候
+  return req
+})
+
+// 在请求之后做一些事情
+service.interceptors.response.use((res)=>{
+  const {status,data,msg}=res;//这里mock的状态码是status
+  if(status==200){
+    return data;
+  }else{
+    //网络请求错误
+    ElMessage.error(msg||NETWORK_ERROR_MSG)
+    return Promise.reject(msg||NETWORK_ERROR_MSG)
+  }
+})
+
+//封装的核心函数
+function request(options){
+  //处理大小写
+  options.method=options.method||'get';
+  if(options.method.toLowerCase()=='get'){
+    options.params=options.data;
+  }
+  //对mock的处理
+  let isMock = config.mock;
+  if(typeof options.mock !== 'undefined'){
+    isMock = options.mock;
+  }
+  //对线上环境做处理
+  if(config.env=='prod'){
+    service.defaults.baseURL=config.baseApi;//线上环境不允许mock，所以只用baseApi
+  } else{
+    service.defaults.baseURL=isMock?config.mockApi:config.baseApi;
+  }
+
+  return service(options)
+}
+
+export default request
+```
+
++ src/api文件夹下创建api.js文件，用于放vue组件可以直接调用的接口函数
+
+```javascript
+/*
+ * 整个项目api管理
+*/
+import request from './request'
+export default{
+    getTableData(params){
+        return request({
+            url:'/getTableData',
+            method:'get',
+            data:params,
+            mock:true
+        })
+    },
+    getCountData(params){
+        return request({
+            url:'/getCountData',
+            method:'get',
+            data:params,
+            mock:true
+        })
+    }
+}
+```
+
++ main.js中挂载到全局：
+
+```javascript
+import api from './api/api.js'
+app.config.globalProperties.$api=api
+```
+
+这样就可以在vue文件里调用这些api了！
+
+如上一例，如下：
+
+```javascript
+const getTableList = async () => {
+  await proxy.$api.getTableData().then((res) => {
+    tableData.value = res.data.tableData;
+  });
+};
+```
+
+等效于之前的用axios直接调用云api
+
+## 右上角卡片实现
+
+数据部分处理类似于左下角，略
+
+
+
+
+
+## Echarts添加
+
+数据部分略，对echarts官方文档crud即可。
+
++ 值得注意的是，放echarts的div必须要用style=""设置宽高，否则会报错。但这里只设置了高也可以了，很奇怪（可能是由于弹性盒子中宽度可以唯一确定而高度不能？）
+
+```javascript
+<div ref="echart" style="height: 280px"></div>
+```
+
++ vue不用传统的getElementById这种DOM语法，而是用ref取而代之，如下：
+
+```vue
+<div ref="echart" style="height: 240px"></div>
+<script>
+    let hEchart = echarts.init(proxy.$refs.echart);//获取DOM元素
+</script>
+```
+
+#### 追加更新
+
+这里增加chart后，height超了浏览器大小，右侧出现滚动条了。下拉滚动条，左侧设为高度100%的侧栏下方出现空白
+
++ 解决方法：
+
+左侧增加`height:100%;position:fixed`的盒子，悬浮在画面下面遮挡住
+
+```vue
+<div class="aside-cover" :style="{width:$store.state.isCollapse ? '64px' : '180px'}">
+</div>
+<style>
+.aside-cover {
+  position: fixed;
+  background-color: #545c64;
+  height: 100%;
+}
+</style>
+```
+
+## 面包屑的实现
+
+试图跟着教程用elementPlus自带的面包屑，但用起来很难，不知道怎么调整字体颜色，故自己从头手搓
+
++ 使用vuex管理当前路由，从CommonHeader中获取store.state并渲染到页面上
+
++ 点击“首页”可以返回首页
+
+具体实现：用\<router-link>写到首页的标签（因为首页一定存在），在后面用\<span>写一级路径（由于这里路径只有一层，故不需要跳转了）
+
+```javascript
+//store.js
+const store=createStore({
+    state:{
+        currentMenu:null,
+    },
+    mutations:{
+        selectMenu(state,val){
+            if(val.name==='home'){
+                state.currentMenu=null;
+                
+            }else{
+                state.currentMenu=val;
+            }
+        },
+    }
+});
+```
+
+`CommonHeader.vue`中获取vuex状态，并渲染到页面上：
+
+（line1含义：点击“首页”跳转到首页，并将vuex容器中currentMenu设为空，通过selectMenu方法来实现）
+
+（line2含义：当vuex容器的currentMenu不为null时（说明现在不在主页），显示处当前页面的面包屑）
+
+```vue
+<router-link to="/" class="first-breadcrumb" @click="toHome()">首页</router-link>
+<span v-if="$store.state.currentMenu!=null" class="second-breadcrumb"> > {{$store.state.currentMenu.label }}</span>
+<script>
+import { useStore } from "vuex";
+const store = useStore();
+const toHome = () => {
+  store.commit("selectMenu", { name: "home" });//将vuex容器的currentMenu改为null
+};
+</script>
+```
+
+## CommonHeader下侧tags实现
+
++ 新增CommonTab.vue组件放在Main下
+
++ tag的添加和删除均需要借助vuex
+
+具体逻辑：
+
++ 添加逻辑：任一种页面跳转如果跳转到tag里没有的页面，需要新加tag（向vuex容器的数组里push）
+
++ 跳转逻辑：向router中push对应tag即可，同时应**调用selectMenu以保证面包屑正确显示**
+
++ 删除逻辑：vuex容器中tagsList数组删除对应tag；如果删除的不是当前页面，不用干其他事；如果删除的刚好是当前显示的页面，需强制跳转到另一个页面（否则会出现tag删除而页面还在这里的情况）
+
+实现：
+
+```javascript
+//store/index.js
+import { createStore } from "vuex";
+const store=createStore({
+    state:{
+        isCollapse:false,
+        currentMenu:null,
+        tagsList:[
+            {
+                path:'/',
+                name:'home',
+                label:'首页',
+                icon:'home'
+            }
+        ]
+    },
+    mutations:{
+        updateIsCollapse(state, payload){
+            state.isCollapse=!state.isCollapse;
+        },
+        selectMenu(state,val){
+            if(val.name==='home'){
+                state.currentMenu=null;
+            }else{
+                state.currentMenu=val;
+                let res=state.tagsList.findIndex(item=>item.name==val.name);
+                if(res==-1){//如果要跳转的页面不在tags里，push进去
+                    state.tagsList.push(val);
+                }
+            }
+        },
+        closeTag(state,val){//在tags里删除对应tag
+            let index=state.tagsList.findIndex(item=>item.name==val.name);
+            state.tagsList.splice(index,1);
+        }
+    }
+});
+export default store
+```
+
+```vue
+<!--CommonTab.vue-->
+<template>
+  <div class="tags">
+    <el-tag
+      :key="tag.name"
+      v-for="(tag, index) in tags"
+      :closable="tag.name !== 'home'"
+      :disable-transitions="false"
+      :effect="$route.name === tag.name ? 'dark' : 'plain'"
+      @click="changeMenu(tag)"
+      @close="handleClose(tag, index)"
+    >
+      {{ tag.label }}
+    </el-tag>
+  </div>
+</template>
+
+<script setup>
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+const tags = store.state.tagsList;
+const changeMenu = (item) => {
+  router.push({
+    name: item.name,
+  });
+  store.commit("selectMenu", item); //***很重要，把面包屑的currentMenu改成正确的***
+};
+const handleClose = (tag, index) => {
+  let len = tags.length - 1;
+  //处理vuex中的tagsList
+  store.commit("closeTag", tag);
+  //做第一个判断
+  if (tag.name !== route.name) {
+    //删除tag的不等于当前的路径
+    return;
+  }
+  if (index === len) {
+    //当删除的是最后一项且是自己
+    router.push({
+      name: tags[index - 1].name, //自己的前一项
+    });
+    store.commit("selectMenu", tags[index - 1]);//一定记得更新面包屑！
+  } else {
+    //当删除的不是最后一项且是自己
+    router.push({
+      name: tags[index].name, //自己的后一项
+    });
+    store.commit("selectMenu", tags[index]);//一定记得更新面包屑！
+  }
+};
+</script>
+<style lang="less" scoped>
+.tags {
+  padding: 20px;
+  width: 100%;
+  .el-tag {
+    margin-right: 15px;
+    cursor: pointer;
+  }
+}
+</style>
+```
+
+之后正常将组件导入main中即可
