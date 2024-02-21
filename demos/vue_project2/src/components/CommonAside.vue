@@ -1,6 +1,8 @@
 <template>
-  <div class="aside-cover" :style="{width:$store.state.isCollapse ? '64px' : '180px'}">
-  </div>
+  <div
+    class="aside-cover"
+    :style="{ width: $store.state.isCollapse ? '64px' : '180px' }"
+  ></div>
   <el-aside :width="$store.state.isCollapse ? '64px' : '180px'">
     <el-menu
       class="el-menu-vertical-demo"
@@ -12,16 +14,16 @@
       <h3 v-show="!$store.state.isCollapse">后台管理</h3>
       <h3 v-show="$store.state.isCollapse">管理</h3>
       <el-menu-item
-        :index="item.path"
+        :index="item.path + ''"
         v-for="item in noChildren()"
-        :key="item.path"
+        :key="item.path+''"
         @click="onClickMenu(item)"
       >
         <component :is="item.icon" class="icons"></component>
         <span>{{ item.label }}</span>
       </el-menu-item>
       <el-sub-menu
-        :index="item.path"
+        :index="item.path+''"
         v-for="item in hasChildren()"
         :key="item.path"
       >
@@ -31,7 +33,7 @@
         </template>
         <el-menu-item-group>
           <el-menu-item
-            :index="1 - 1"
+            :index="subItem.path"
             v-for="(subItem, subIndex) in item.children"
             :key="subIndex"
             @click="onClickMenu(subItem)"
@@ -47,9 +49,9 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import {useStore} from 'vuex'
-const store=useStore();
-const list = [
+import { useStore } from "vuex";
+const store = useStore();
+/*const list = ref([
   {
     path: "/user",
     name: "user",
@@ -78,20 +80,19 @@ const list = [
       },
     ],
   },
-];
+]);*/
 const noChildren = () => {
-  return list.filter((item) => !item.children);
+  return asyncList.filter((item) => !item.children);
 };
 const hasChildren = () => {
-  return list.filter((item) => item.children);
+  return asyncList.filter((item) => item.children);
 };
 const router = useRouter();
 const onClickMenu = (item) => {
   router.push(item);
-  console.log(item);
-  store.commit('selectMenu',item);
-  
+  store.commit("selectMenu", item);
 };
+const asyncList=store.state.menu;
 </script>
 
 <style>

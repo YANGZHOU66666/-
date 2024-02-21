@@ -4,7 +4,7 @@
       <el-button size="small" @click="handleCollapse()">
         <el-icon :size="20"><Menu /></el-icon>
       </el-button>
-      <router-link to="/" class="first-breadcrumb" @click="toHome()"
+      <router-link to="/home" class="first-breadcrumb" @click="toHome()"
         >首页</router-link
       >
       <span v-if="$store.state.currentMenu!=null" class="second-breadcrumb"> > {{ $store.state.currentMenu.label }}</span>
@@ -17,7 +17,7 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
+            <el-dropdown-item @click="handleLogOut">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -27,7 +27,9 @@
 
 <script setup>
 import { useStore } from "vuex";
+import {useRouter} from 'vue-router'
 const store = useStore();
+const router = useRouter();
 const getImgSrc = (user) => {
   return new URL(`../assets/images/${user}.png`, import.meta.url).href;
 };
@@ -40,6 +42,10 @@ const handleCollapse = () => {
 const toHome = () => {
   store.commit("selectMenu", { name: "home" });
 };
+const handleLogOut=()=>{
+  store.commit("logOutConfiguration");
+  router.push({name:'login'});
+}
 </script>
 
 <style>

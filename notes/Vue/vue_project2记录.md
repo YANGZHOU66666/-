@@ -1179,3 +1179,127 @@ const handleClose = (tag, index) => {
 ```
 
 之后正常将组件导入main中即可
+
+## User组件表格实现
+
+
+
+## 用户添加表单实现
+
+注意.el-select的宽度必须要手动设置el-form才可以，否则不会变、不会显示placeholder的内容（算是elementPlus没优化好的地方）
+
+样式实现部分基本是对UI进行CRUD，不展开了
+
+由于没有后端无法模拟上传，提交数据部分只写一个空函数`submitToServer()`。
+
+注意.el-form刚开始没设置`:model="userFormData"`所以不能对表格全局调用一些东西，后面加了之后好了
+
+每次提交数据时需要清空表单+更新表格，故作以下处理：（获取.el-form DOM，清空表格）
+
+```javascript
+proxy.$refs.userForm.resetFields();
+```
+
+检验数据：按照elementPlus中的语法规则对每个.el-form-item进行设置，然后通过调用.el-form的validate()方法即可
+
+点击提交按钮后应调用的方法：
+
+```javascript
+const onSubmitUserData = () => {
+  //提交用户数据
+  proxy.$refs.userForm.validate(async (valid) => {
+    if (valid) {
+      userFormData.birth = toFormatTime(userFormData.birth); //将生日全部标准化为字符串
+      await submitToServer(userFormData).then((res) => {
+        //模拟上传至后端成功
+        console.log(res);
+        //本地数据添加，深拷贝新对象(没想到其他好方法，如果直接unshift(userFormData)会导致指向同一块内存)
+        tableData.value.unshift(JSON.parse(JSON.stringify(userFormData)));
+        config.total++;
+        //这里用.el-form表单自带的resetFields()清空表单中数据
+        proxy.$refs.userForm.resetFields();
+      });
+    }
+  });
+};
+```
+
+#### 追加更新
+
+在提交表单检验不合法后弹出提示框，使用ElMessage，但是不显示。最后发现问题是当使用vue自动引入时再import {ElMessage}就会出问题。
+
+
+
+## 大追加
+
++ 不知道怎么回事突然发现性别一栏显示的是0和1？（可能是之前就没弄好，还是哪一次弄坏了？）
+
+解决方案：直接从源头上改了，设置数据时直接设为"男"和"女"，
+
+```javascript
+const getCurrentDisplayData = () => {
+  //获取当前应该展示的一页数据(包含搜索/非搜索情况)
+  if (config.name == "") {
+    //如果不进行搜索，展示所有数据
+    let resData = tableData.value.slice(
+      (config.page - 1) * itemInOnePage,
+      config.page * itemInOnePage
+    );
+    return resData;
+  } else {
+    //搜索栏有字符串，展示符合的数据
+    let searchRes = tableData.value.filter((item) => {
+      return item.name.indexOf(config.name) != -1;
+    });
+    let num = searchRes.length;
+    config.total = num;
+    let curRes = searchRes.slice(
+      (config.page - 1) * itemInOnePage,
+      config.page * itemInOnePage
+    );
+    })
+    return curRes;
+  }
+};
+```
+
++ 报错：
+
+```
+[Vue warn]: Invalid prop: type check failed for prop "index". Expected String | Null, got Number with value 0. 
+  at <ElMenuItem index=0 key=0 onClick=fn<onClick> > 
+  at <ElMenuItemGroup> 
+  at <BaseTransition onBeforeEnter=fn<onBeforeEnter> onEnter=fn onAfterEnter=fn<afterEnter>  ... > 
+  at <Transition name="el-collapse-transition" onBeforeEnter=fn<beforeEnter> onEnter=fn<enter>  ... > 
+  at <ElCollapseTransition > 
+  at <ElSubMenu index="/other" key="/other" > 
+  at <ElMenu class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff"  ... > 
+  at <ElAside width="180px" > 
+  at <CommonAside> 
+  at <ElContainer style= {flex-wrap: 'nowrap'} > 
+  at <Main onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+```
+
+检查发现CommonAside.vue中一个不关键的prop（.el-menu-item中的:index）误设为常量0了，改正即可。
+
+补：同样问题的还有`:index="item.page+''"`需要加个单引号转化为字符串就不会报错
+
+
+
+## 解决数据持久化问题
+
+核心思想：每次在vuex容器中更新数据时再存储到本地一份，每次更新页面时将本地数据再加载到vuex容器中
+
+
+
+## 动态路由实现
+
+原因：如果把router/index.js的routes写死，当用户种类比较多、页面很多时routes元素会过多，应当按照后端传来的数据动态调整路由
+
+（没做）
+
+## 登出功能实现
+
+思路：清除vuex在本地的缓存，将页面转至login页

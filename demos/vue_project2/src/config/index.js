@@ -4,7 +4,8 @@
 */
 
 //当前的环境
-const env=import.meta.env.MODE || 'prod'
+let env=import.meta.env.MODE || 'prod'
+env='development'//现在强行声明为开发环境
 
 const EnvConfig = {
     development:{//开发环境
@@ -20,7 +21,6 @@ const EnvConfig = {
         mockApi: 'https://mock.apifox.com/m1/4022542-0-default/'
     }
 }
-
 export default{
     env,
     mock:true,//mock的总开关

@@ -109,12 +109,11 @@ const tableLabel = {
   totalBuy: "总购买",
 };
 const getTableList = async () => {
-  /*await axios.get('http://127.0.0.1:4523/m1/4022542-0-default/getTableData').then((res)=>{
-    console.log(res);
+
+  /*await axios.get('/api/getTableData').then((res)=>{//本地mock的残留
     tableData.value=res.data.data.tableData;
   });*/
   await proxy.$api.getTableData().then((res) => {
-    //console.log(res);
     tableData.value = res.data.tableData;
   });
 };

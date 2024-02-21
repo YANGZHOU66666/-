@@ -1,7 +1,7 @@
 export default {
     getHomeData:()=>{
         return {
-            code:200,
+            status:200,
             data:{
                 tableData:[
                     {

@@ -1,4 +1,9 @@
-<script setup></script>
+<script setup>
+import {useStore} from 'vuex';
+const store=useStore();
+store.commit("addMenu");
+store.commit('addTags');
+</script>
 
 <template>
   <router-view/>

@@ -34,5 +34,13 @@ export default{
             data:params,
             mock:true
         });
+    },
+    getMenu(params){
+        return request({
+            url:'/getMenu',
+            method:'post',
+            data:params,
+            mock:false
+        })
     }
 }
