@@ -21,8 +21,6 @@ yarn install
 yarn dev
 ```
 
-
-
 ## 引入ElementPlus
 
 + 先安装：
@@ -1182,6 +1180,8 @@ const handleClose = (tag, index) => {
 
 ## User组件表格实现
 
+`onMounted()`之后向后端请求数据，对设计图CRUD即可
+
 
 
 ## 用户添加表单实现
@@ -1230,7 +1230,33 @@ const onSubmitUserData = () => {
 
 
 
-## 大追加
+## 用户编辑表单实现
+
+由于弹出框的UI和添加基本是一样的，故沿用添加的`dialog`框，新增一个变量action用于判断应该弹出的是添加还是编辑用户
+
+```javascript
+const action = ref("add");
+```
+
+action影响的有二：一是dialog上的标题会变为"编辑用户"，二是提交数据时onSubmitUserData逻辑不一样。
+
+**关键点：**点击编辑按钮onDispayEditUser()后的逻辑实现，必须使用$nextTick()
+
+```javascript
+const onDisplayEditUser = (res) => {
+  //打开编辑窗口，进行必要设置
+  action.value = "edit";
+  dialogVisible.value = true;
+  proxy.$nextTick(() => {
+    Object.assign(userFormData, res.row); //将用户数据放在绑定区中
+    curIndex.value = res.$index;
+  });
+};
+```
+
+
+
+## 追加更新
 
 + 不知道怎么回事突然发现性别一栏显示的是0和1？（可能是之前就没弄好，还是哪一次弄坏了？）
 
@@ -1286,8 +1312,6 @@ const getCurrentDisplayData = () => {
 
 补：同样问题的还有`:index="item.page+''"`需要加个单引号转化为字符串就不会报错
 
-
-
 ## 解决数据持久化问题
 
 核心思想：每次在vuex容器中更新数据时再存储到本地一份，每次更新页面时将本地数据再加载到vuex容器中
@@ -1302,4 +1326,90 @@ const getCurrentDisplayData = () => {
 
 ## 登出功能实现
 
-思路：清除vuex在本地的缓存，将页面转至login页
+思路：清除vuex在本地的localStorate，将页面转至login页
+
+
+
+
+
+## 项目打包和部署
+
+关键点：
+
+1. 本地`npm run build`打包，`npm run preview`预览
+
+2. 参考vite官方文档（[部署静态站点 | Vite 官方中文文档 (vitejs.dev)](https://cn.vitejs.dev/guide/static-deploy)）和一个GitHub项目（[sitek94/vite-deploy-demo: Deploy Vite app to GitHub Pages using GitHub Actions](https://github.com/sitek94/vite-deploy-demo?tab=readme-ov-file)）核心步骤为本地提交项目到main分支到GitHub上（命令行如下）
+
+   ```
+   git init
+   git add .
+   git commit -m "init vite project"
+   git remote add origin git@github.com:sitek94/vite-deploy-demo.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. 再新开deploy.yml脚本（放在根目录/.github/workflows）下，用vite官网提供的脚本：
+
+   ```
+   # 将静态内容部署到 GitHub Pages 的简易工作流程
+   name: Deploy static content to Pages
+   
+   on:
+     # 仅在推送到默认分支时运行。
+     push:
+       branches: ['main']
+   
+     # 这个选项可以使你手动在 Action tab 页面触发工作流
+     workflow_dispatch:
+   
+   # 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages。
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+   
+   # 允许一个并发的部署
+   concurrency:
+     group: 'pages'
+     cancel-in-progress: true
+   
+   jobs:
+     # 单次部署的工作描述
+     deploy:
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+         - name: Set up Node
+           uses: actions/setup-node@v3
+           with:
+             node-version: 18
+             cache: 'npm'
+         - name: Install dependencies
+           run: npm install
+         - name: Build
+           run: npm run build
+         - name: Setup Pages
+           uses: actions/configure-pages@v3
+         - name: Upload artifact
+           uses: actions/upload-pages-artifact@v2
+           with:
+             # Upload dist repository
+             path: './dist'
+         - name: Deploy to GitHub Pages
+           id: deployment
+           uses: actions/deploy-pages@v2
+   ```
+
+   再次提交到GitHub上去后actions应该会自动执行脚本，注意按照如上所说GitHub项目中写到必须要在设置中允许writing and reading（`read and write permissions`）和下面的一个复选框（`Allow GitHub Actions to create and approve pull requests`）
+
+   这里还需要在GitHub Pages的设置中将source改为GitHub Actions（最后就卡在这一步了，之前一直没设），等待脚本执行完毕即可
+
+## 追加更新
+
+项目期间发生了好几次路由跳转至首页但是面包屑不更新的情况，在对应情况调用一下vuex中的函数即可
+

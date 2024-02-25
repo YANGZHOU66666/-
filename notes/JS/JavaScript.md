@@ -724,6 +724,10 @@ let m=Reflect.ownKeys(obj);
 console.log(m[0]);
 ```
 
+##
+
+
+
 ### 复杂类型（引用类型）
 
 通过**new**关键字创建的对象（系统对象、自定义对象），如 Object、Array、Date等
@@ -1487,6 +1491,74 @@ const fn=outer();
 ```
 
 这样可以**保护变量**，在外部无法修改a的值
+
+## this关键字
+
++ 由上下文决定的
+
+### 全局上下文
+
+全局上下文中this指向全局对象，在浏览器中正常是window对象
+
+```javascript
+console.log(this === window); // true
+```
+
+### 函数上下文
+
++ 常用
+
+非严格模式下，指向window；严格模式下，为undefined
+
+```javascript
+function fun(){
+	console.log(this);
+}
+fun();//window
+```
+
++ 对象中的方法
+
+指向对象本身
+
+```javascript
+const obj={
+    a:1,
+    b:"bbb",
+    method:function(){
+        console.log(this);
+    }
+}
+obj.method();//{ a: 1, b: 'bbb', method: [Function: method] }
+```
+
++ 构造方法
+
+用new创建对象时，this指向新创建的对象
+
+```javascript
+function Constructor() {
+  this.prop = 1;
+}
+const instance = new Constructor();
+console.log(instance.prop); // 1
+```
+
++ 箭头函数
+
+箭头函数不绑定自己的this，继承父执行上下文的this
+
+```javascript
+const obj = {
+  method: function() {
+    const arrowFunc = () => console.log(this);
+    arrowFunc();
+  }
+};
+obj.method(); // this指向obj，因为arrowFunc继承了method的this
+```
+
+
 
 ## 深拷贝和浅拷贝
 

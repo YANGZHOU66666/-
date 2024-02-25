@@ -31,9 +31,11 @@ console.log(dog1);
 console.log(dog1.getName());
 dog1.say();
 */
-
-let a=[1,2,3];
-
-let b=a;
-b[0]=2;
-console.log(a);
+const obj={
+    a:1,
+    b:"bbb",
+    method:function(){
+        console.log(this);
+    }
+}
+obj.method();

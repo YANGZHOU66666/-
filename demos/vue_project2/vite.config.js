@@ -6,7 +6,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 
 export default defineConfig({
-  base:"/vue-project/",
+  base:"/vue-project2/",
   plugins: [
     vue(),
     AutoImport({
